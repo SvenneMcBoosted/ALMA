@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "alma-local"
+version = "0.1.0"
+description = ""
+authors = ["enabty <ybring@student.chalmers.se>"]
+readme = "README.md"
+packages = [{include = "alma_local"}]
+
+[tool.poetry.dependencies]
+python = "^3.8.0"
+numpy = "^1.20"
+geos = "^0.2.3"
+shapely = "^2.0.1"
+clustar = "^1.2.1"
+matplotlib = "3.3.4"
+astropy = "4.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
