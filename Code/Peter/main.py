@@ -1,3 +1,6 @@
+import joblib
+from skimage.transform import resize
+from skimage.io import imread
 from init_modules import *
 
 
@@ -90,12 +93,20 @@ def augment_disk(disk):
 
 # This function generates the positive dataset
 def generate_pos_dataset(augmentations_per_gaussian):
+    count = 0
     pos_dataset = []
     for gaussian in gaussians:
         for i in range(0, augmentations_per_gaussian):
             zscale = ZScaleInterval(contrast=0.25, nsamples=1)
             # Augment the data and add it to the dataset as png
-            pos_dataset.append(zscale(augment_disk(gaussian.data)))
+            plt.figure()
+            plt.imshow(zscale(augment_disk(gaussian.data)),
+                       origin='lower', cmap='rainbow')
+            # plt.colorbar()
+            # plt.title("Augmented gaussian")
+            # plt.show()
+
+            # pos_dataset.append(zscale(augment_disk(gaussian.data)))
     return pos_dataset
 
 
@@ -119,10 +130,57 @@ def generate_neg_dataset(augmentations_per_gaussian):
     return neg_dataset
 
 
+def resize_all(src, pklname, include, width=150, height=None):
+    """
+    load images from path, resize them and write them as arrays to a dictionary,
+    together with labels and metadata. The dictionary is written to a pickle file
+    named '{pklname}_{width}x{height}px.pkl'.
+
+    Parameter
+    ---------
+    src: str
+        path to data
+    pklname: str
+        path to output file
+    width: int
+        target width of the image in pixels
+    include: set[str]
+        set containing str
+    """
+
+    height = height if height is not None else width
+
+    data = dict()
+    data['description'] = 'resized ({0}x{1})animal images in rgb'.format(
+        int(width), int(height))
+    data['label'] = []
+    data['filename'] = []
+    data['data'] = []
+
+    pklname = f"{pklname}_{width}x{height}px.pkl"
+
+    for image in src:
+        im = imread(os.path.join(current_path, file))
+        im = image  # [:,:,::-1]
+        data['label'].append(subdir[:-4])
+        data['filename'].append(file)
+        data['data'].append(im)
+
+    joblib.dump(data, pklname)
+
+
 if __name__ == '__main__':
 
     X_test = generate_pos_dataset(50)
     y_test = generate_neg_dataset(50)
+
+    print(X_test.shape)
+
+    plt.figure()
+    plt.imshow(X_test[0], origin='lower', cmap='rainbow')
+    plt.colorbar()
+    plt.title("Augmented gaussian")
+    plt.show()
 
     X_train = generate_pos_dataset(50)
     y_train = generate_neg_dataset(50)
@@ -132,32 +190,3 @@ if __name__ == '__main__':
 
     # X_train, X_test, y_train, y_test = train_test_split(
     #     x, y, test_size=.33)
-
-    # reshaping data
-    X_train = X_train.reshape(
-        (X_train.shape[0], X_train.shape[1], X_train.shape[2], 1))
-    X_test = X_test.reshape(
-        (X_test.shape[0], X_test.shape[1], X_test.shape[2], 1))
-    # checking the shape after reshaping
-    print(X_train.shape)
-    print(X_test.shape)
-    # normalizing the pixel values
-    X_train = X_train/255
-    X_test = X_test/255
-
-    # defining model
-    model = Sequential()
-    # adding convolution layer
-    model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)))
-    # adding pooling layer
-    model.add(MaxPool2D(2, 2))
-    # adding fully connected layer
-    model.add(Flatten())
-    model.add(Dense(100, activation='relu'))
-    # adding output layer
-    model.add(Dense(10, activation='softmax'))
-    # compiling the model
-    model.compile(loss='sparse_categorical_crossentropy',
-                  optimizer='adam', metrics=['accuracy'])
-    # fitting the model
-    model.fit(X_train, y_train, epochs=10)
