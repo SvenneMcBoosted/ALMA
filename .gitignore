@@ -1,0 +1,6 @@
+# Mac stuff
+.DS_Store
+
+# ALMA stuff
+alminercopy.py
+testclick.py
