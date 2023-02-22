@@ -9,7 +9,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import numpy as np
 
 def open_img(img_path):
-
+    """Trivial function/wrapper to open/view image specified by filepath"""
     img = mpimg.imread(img_path)
 # Display the image
     plt.imshow(img)
@@ -23,9 +23,10 @@ class CNN(nn.Module):
         self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1)
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         self.conv2 = nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1)
-        self.fc1 = nn.Linear(8192, 128)
-        self.fc2 = nn.Linear(128, 10)
+        self.fc1 = nn.Linear(8192, 128)  # Are these optimal? 
+        self.fc2 = nn.Linear(128, 10)  # Are these optimal?
 
+#  TODO: Add more layers when dataset is larger
     def forward(self, x):
         x = self.pool(torch.relu(self.conv1(x)))
         x = self.pool(torch.relu(self.conv2(x)))
@@ -41,27 +42,27 @@ transform = transforms.Compose([
     # transforms.RandomRotation(10),
     # transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2),
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    # transforms.Normalize(mean=[0.0, 0.0, 0.0], std=[1.0, 1.0, 1.0])
-    # transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]) # nr.1 (torch default)
+    # transforms.Normalize(mean=[0.0, 0.0, 0.0], std=[1.0, 1.0, 1.0]) # nr.2
+    # transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]) # nr.3
 ])
 
 # Load the dataset
 train_set = datasets.ImageFolder(root='../data/dataset/train/', transform=transform)
 num_classes = len(train_set.classes)
-print(num_classes)
+# print(num_classes)  # 2
 train_loader = torch.utils.data.DataLoader(train_set, batch_size=2, shuffle=True)
 
 # Create the model
 model = CNN()
 
 # Define the loss function and optimizer
-criterion = nn.CrossEntropyLoss()
+criterion = nn.CrossEntropyLoss()  # Maybe do weighted entropy loss function towards the smaller class in train data
 optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9) # lr=0.001, 0.01, 0.1
 
 # Train the model
 total_images = 0
-for epoch in range(5):
+for epoch in range(10): # Trying between 1-15 bc hardware bottleneck
     running_loss = 0.0
     epoch_images = 0  # count images trained in this epoch
     for i, data in enumerate(train_loader, 0):
@@ -112,11 +113,10 @@ print(conf_matrix)
 class_names = train_set.classes
 print(class_names)
 
-# Create the confusion matrix display object
+# Create the confusion matrix object
 cm_display = ConfusionMatrixDisplay(confusion_matrix=conf_matrix, display_labels=class_names)
 
 # Generate the plot of the confusion matrix
 fig, ax = plt.subplots(figsize=(8, 8))
 cm_display.plot(ax=ax)
 plt.show()
-
