@@ -13,6 +13,7 @@ torchvision = "^0.14.1+cpu"
 matplotlib = "^3.7.0"
 astropy = "^5.2.1"
 scikit-learn = "^1.2.1"
+pillow = "^9.4.0"
 
 [[tool.poetry.source]]
 name = "torchcpu"
