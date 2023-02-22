@@ -5,7 +5,8 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
-
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import numpy as np
 
 def open_img(img_path):
 
@@ -36,12 +37,17 @@ class CNN(nn.Module):
 # Define the transforms to apply to the images
 transform = transforms.Compose([
     transforms.Resize((128, 128)),
+    # transforms.RandomHorizontalFlip(),
+    # transforms.RandomRotation(10),
+    # transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2),
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    # transforms.Normalize(mean=[0.0, 0.0, 0.0], std=[1.0, 1.0, 1.0])
+    # transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
 ])
 
 # Load the dataset
-train_set = datasets.ImageFolder(root='../data/dataset/', transform=transform)
+train_set = datasets.ImageFolder(root='../data/dataset/train/', transform=transform)
 num_classes = len(train_set.classes)
 print(num_classes)
 train_loader = torch.utils.data.DataLoader(train_set, batch_size=2, shuffle=True)
@@ -51,12 +57,13 @@ model = CNN()
 
 # Define the loss function and optimizer
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9) # lr=0.001, 0.01, 0.1
 
 # Train the model
-model = CNN()
+total_images = 0
 for epoch in range(5):
     running_loss = 0.0
+    epoch_images = 0  # count images trained in this epoch
     for i, data in enumerate(train_loader, 0):
         inputs, labels = data
         optimizer.zero_grad()
@@ -67,29 +74,49 @@ for epoch in range(5):
         optimizer.step()
 
         running_loss += loss.item()
+        epoch_images += len(inputs)  # increment counter by batch size
+        total_images += len(inputs)  # increment total counter
         if i % 2000 == 1999:  
             print('[%d, %5d] loss: %.3f' %
                   (epoch + 1, i + 1, running_loss / 2000))
             running_loss = 0.0
 
+    print('Epoch %d trained on %d images' % (epoch + 1, epoch_images))
+
 print('Finished Training')
 
 # Test the model
-test_set = datasets.ImageFolder(root='../data/testset/', transform=transform)
-test_loader = torch.utils.data.DataLoader(test_set, batch_size=100, shuffle=False)
+test_set = datasets.ImageFolder(root='../data/dataset/test/', transform=transform)
+test_loader = torch.utils.data.DataLoader(test_set, batch_size=10, shuffle=False)
 
 correct = 0
 total = 0
+predictions = []
+true_labels = []
 with torch.no_grad():
     for data in test_loader:
         images, labels = data
         outputs = model(images)
         _, predicted = torch.max(outputs.data, 1)
+        predictions.extend(predicted.numpy())
+        true_labels.extend(labels.numpy())
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
 print('Accuracy of the network on the test images: %d %%' % (
     100 * correct / total))
 
-# if __name__ == "__main__":
-#     open_img('../data/dataset/pos_dataset/pos_0.png')
+# Compute the confusion matrix
+conf_matrix = confusion_matrix(true_labels, predictions)
+print(conf_matrix)
+class_names = train_set.classes
+print(class_names)
+
+# Create the confusion matrix display object
+cm_display = ConfusionMatrixDisplay(confusion_matrix=conf_matrix, display_labels=class_names)
+
+# Generate the plot of the confusion matrix
+fig, ax = plt.subplots(figsize=(8, 8))
+cm_display.plot(ax=ax)
+plt.show()
+
