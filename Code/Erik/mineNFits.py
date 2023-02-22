@@ -22,7 +22,7 @@ ism = alminer.keysearch(
     {'science_keyword': ['"inter-stellar medium (ism)/molecular clouds"']})
 
 search_dict = {'lowmass': lowmass, 'intermass': intermass,
-               'outflows_feedback': outflows_feedback, 'outflows_winds': outflows_winds, 'ism': ism}
+               'outflows_feedback': outflows_feedback, 'outflows_winds': outflows_winds, 'intesrellar_medium_ism': ism}
 
 # downloadData.download_n_data(lowmass, amount_of_random_files=15, fitsonly=True, dryrun=False, location='./data',
 #                             filename_must_include=['.pbcor', 'cont', '_sci'], print_urls=True, archive_mirror='ESO')
