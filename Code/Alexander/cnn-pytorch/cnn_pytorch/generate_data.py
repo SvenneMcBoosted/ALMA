@@ -1,9 +1,9 @@
 import os
-import torch
 import torchvision.transforms as transforms
-import numpy
 import torchvision
 from PIL import Image
+# import torch
+# import numpy
 
 # Define the input and output directories
 input_dir = '../data/sets/input/'
