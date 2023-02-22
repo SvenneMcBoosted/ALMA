@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "cnn-pytorch"
+version = "0.1.0"
+description = ""
+authors = ["enabty <ybring@student.chalmers.se>"]
+readme = "README.md"
+packages = [{include = "cnn_pytorch"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = { version = "^1.12.1+cpu", source = "torchcpu" }
+torchvision = "^0.14.1+cpu"
+matplotlib = "^3.7.0"
+astropy = "^5.2.1"
+scikit-learn = "^1.2.1"
+
+[[tool.poetry.source]]
+name = "torchcpu"
+url = "https://download.pytorch.org/whl/cpu"
+default = false
+secondary = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
