@@ -1,3 +1,6 @@
 .python-version
 # cnn-pytorch/data/sets/
 cnn-pytorch/data/
+cnn-pytorch/cnn_pytorch/snippets.py
+cnn-pytorch/cnn_pytorch/IMPROVEMENTS.md
+
