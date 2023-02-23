@@ -1,2 +1,3 @@
 .python-version
-cnn-pytorch/data/sets/
+# cnn-pytorch/data/sets/
+cnn-pytorch/data/
