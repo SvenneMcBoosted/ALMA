@@ -1,4 +1,5 @@
 .python-version
+alma-local/
 # cnn-pytorch/data/sets/
 cnn-pytorch/data/
 cnn-pytorch/cnn_pytorch/snippets.py
