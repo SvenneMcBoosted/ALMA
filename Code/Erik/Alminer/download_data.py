@@ -7,7 +7,7 @@
 ##############################################
 # Libraries
 ##############################################
-from constantsCopy import band_names, band_color, band_min_freq, band_max_freq, \
+from constants_copy import band_names, band_color, band_min_freq, band_max_freq, \
     CO_line_names, CO_line_freq, CO_line_ha, CO_line_label, VALID_KEYWORDS_STR, \
     NEW_COLUMNS, COLUMN_TYPES
 from pyvo.dal import tap
