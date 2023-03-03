@@ -5,6 +5,9 @@ cnn-pytorch/cnn_pytorch/snippets.py
 cnn-pytorch/cnn_pytorch/IMPROVEMENTS.md
 cnn-pytorch/data_local/
 
-data/png/pos/*.png
-data/png/neg/*.png
+data/png/test/pos/*.png
+data/png/test/neg/*.png
+data/png/train/pos/*.png
+data/png/train/neg/*.png
+
 data/fits/pos/*.fits

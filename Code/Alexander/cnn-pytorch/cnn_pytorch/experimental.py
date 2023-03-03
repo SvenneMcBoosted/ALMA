@@ -7,7 +7,14 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import numpy as np
-import timeit
+
+def open_img(img_path):
+    """Trivial function/wrapper to open/view image specified by filepath"""
+    img = mpimg.imread(img_path)
+# Display the image
+    plt.imshow(img)
+    plt.show()
+
 
 # Define the CNN model
 class CNN(nn.Module):
@@ -41,7 +48,7 @@ transform = transforms.Compose([
 ])
 
 # Load the dataset
-train_set = datasets.ImageFolder(root='../data/dataset/train/', transform=transform)
+train_set = datasets.ImageFolder(root='../data/dataset/v1.0/train/', transform=transform)
 num_classes = len(train_set.classes)
 # print(num_classes)  # 2
 train_loader = torch.utils.data.DataLoader(train_set, batch_size=2, shuffle=True)
@@ -53,14 +60,9 @@ model = CNN()
 criterion = nn.CrossEntropyLoss()  # Maybe do weighted entropy loss function towards the smaller class in train data
 optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9) # lr=0.001, 0.01, 0.1
 
-t_0 = timeit.default_timer()  # Timer start
-print("Training started")
 # Train the model
-n_epochs = 10
 total_images = 0
-print(f'Number of epochs: {n_epochs}')
-print('*'*50)
-for epoch in range(n_epochs): # Trying between 1-15 bc hardware bottleneck
+for epoch in range(10): # Trying between 1-15 bc hardware bottleneck
     running_loss = 0.0
     epoch_images = 0  # count images trained in this epoch
     for i, data in enumerate(train_loader, 0):
@@ -82,24 +84,16 @@ for epoch in range(n_epochs): # Trying between 1-15 bc hardware bottleneck
 
     print('Epoch %d trained on %d images' % (epoch + 1, epoch_images))
 
-print('*'*50)
 print('Finished Training')
-t_1 = timeit.default_timer()
-# calculate elapsed time and print
-elapsed_time = round((t_1 - t_0), 3)
-print(f"Elapsed time: {elapsed_time} s")
 
 # Test the model
-test_set = datasets.ImageFolder(root='../data/dataset/test/', transform=transform)
+test_set = datasets.ImageFolder(root='../data/dataset/v1.0/test/', transform=transform)
 test_loader = torch.utils.data.DataLoader(test_set, batch_size=10, shuffle=False)
 
-# Init some useful variables
 correct = 0
 total = 0
 predictions = []
 true_labels = []
-misclassified = []
-
 with torch.no_grad():
     for data in test_loader:
         images, labels = data
@@ -110,29 +104,9 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-        # check for misclassified images and add their fpaths to the misclassified list
-        for i in range(len(predicted)):
-            if predicted[i] != labels[i]:
-                filename = test_set.samples[i][0]
-                true_label = test_set.classes[labels[i]]
-                predicted_label = test_set.classes[predicted[i]]
-                misclassified.append((filename, true_label, predicted_label))
-
-print('*'*50)
 print('Accuracy of the network on the test images: %d %%' % (
     100 * correct / total))
-print('*'*50)
 
-# print out the misclassified images and their true/predicted labels
-print("Misclassified images")
-for item in misclassified:
-    print('-'*35)
-    print('Image:', item[0])
-    print('True label:', item[1])
-    print('Predicted label:', item[2])
-
-print('*'*50)
-print("Confusion Matrix (CLI)")
 # Compute the confusion matrix
 conf_matrix = confusion_matrix(true_labels, predictions)
 print(conf_matrix)
