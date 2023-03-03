@@ -131,22 +131,6 @@ def generate_neg_dataset(augmentations_per_gaussian):
 
 
 def resize_all(src, pklname, include, width=150, height=None):
-    """
-    load images from path, resize them and write them as arrays to a dictionary,
-    together with labels and metadata. The dictionary is written to a pickle file
-    named '{pklname}_{width}x{height}px.pkl'.
-
-    Parameter
-    ---------
-    src: str
-        path to data
-    pklname: str
-        path to output file
-    width: int
-        target width of the image in pixels
-    include: set[str]
-        set containing str
-    """
 
     height = height if height is not None else width
 
