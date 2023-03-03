@@ -1,7 +1,10 @@
 .python-version
 alma-local/
-# cnn-pytorch/data/sets/
-cnn-pytorch/data/
+
 cnn-pytorch/cnn_pytorch/snippets.py
 cnn-pytorch/cnn_pytorch/IMPROVEMENTS.md
+cnn-pytorch/data_local/
 
+data/png/pos/*.png
+data/png/neg/*.png
+data/fits/pos/*.fits
