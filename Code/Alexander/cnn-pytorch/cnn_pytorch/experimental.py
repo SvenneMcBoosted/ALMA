@@ -48,7 +48,7 @@ transform = transforms.Compose([
 ])
 
 # Load the dataset
-train_set = datasets.ImageFolder(root='../data/dataset/v1.0/train/', transform=transform)
+train_set = datasets.ImageFolder(root='../../data/png/train/', transform=transform)
 num_classes = len(train_set.classes)
 # print(num_classes)  # 2
 train_loader = torch.utils.data.DataLoader(train_set, batch_size=2, shuffle=True)
@@ -87,7 +87,7 @@ for epoch in range(10): # Trying between 1-15 bc hardware bottleneck
 print('Finished Training')
 
 # Test the model
-test_set = datasets.ImageFolder(root='../data/dataset/v1.0/test/', transform=transform)
+test_set = datasets.ImageFolder(root='../../data/png/test/', transform=transform)
 test_loader = torch.utils.data.DataLoader(test_set, batch_size=10, shuffle=False)
 
 correct = 0
