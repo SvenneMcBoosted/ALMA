@@ -24,7 +24,7 @@ def fits2pngFile(file_path, save_path, name):
     plt.imshow(data)
     plt.axis('off')
     plt.ioff()
-    plt.savefig('./data/train/' + name + '.png', bbox_inches='tight', pad_inches=0)
+    plt.savefig('../data/output/create_dataset/cp/' + name + '.png', bbox_inches='tight', pad_inches=0)
     plt.close()
 
 def fits2pngData(data, save_path, name):
@@ -33,13 +33,13 @@ def fits2pngData(data, save_path, name):
     plt.imshow(zscale(data.data).squeeze(), origin='lower', cmap='rainbow', aspect='auto')
     plt.axis('off')
     plt.ioff()
-    plt.savefig('./data/train/' + name + '.png', bbox_inches='tight', pad_inches=0)
+    plt.savefig('../data/output/create_dataset/cp/' + name + '.png', bbox_inches='tight', pad_inches=0)
     plt.close()
 
-train_positives = {os.path.splitext(f)[0] : 1 for f in os.listdir('./data/train/positives')}
-train_negatives = {os.path.splitext(f)[0] : 0 for f in os.listdir('./data/train/negatives')}
-eval_positives = {os.path.splitext(f)[0] : 1 for f in os.listdir('./data/eval/positives')}
-eval_negatives = {os.path.splitext(f)[0] : 0 for f in os.listdir('./data/eval/negatives')}
+train_positives = {os.path.splitext(f)[0] : 1 for f in os.listdir('../data/input/train/pos/')}
+train_negatives = {os.path.splitext(f)[0] : 0 for f in os.listdir('../data/input/train/neg')}
+eval_positives = {os.path.splitext(f)[0] : 1 for f in os.listdir('../data/input/eval/pos')}
+eval_negatives = {os.path.splitext(f)[0] : 0 for f in os.listdir('../data/input/eval/neg')}
 train_dt = {**train_positives, **train_negatives}
 eval_dt = {**eval_positives, **eval_negatives}
 
@@ -63,11 +63,11 @@ def find_object_pos(file):
 #Spara alla .fits filer som png för inmatninig i CNN
 for name, label in train_dt.items():
     if (label):
-        img_data = fits.getdata('./data/train/positives/' + name + '.fits')
-        object_pos = find_object_pos('./data/train/positives/' + name + '.fits')
+        img_data = fits.getdata('../data/input/train/pos/' + name + '.fits')
+        object_pos = find_object_pos('../data/input/train/pos/' + name + '.fits')
     else:
-        img_data = fits.getdata('./data/train/negatives/' + name + '.fits')
-        object_pos = find_object_pos('./data/train/negatives/' + name + '.fits')
+        img_data = fits.getdata('../data/input/train/neg/' + name + '.fits')
+        object_pos = find_object_pos('../data/input/train/neg/' + name + '.fits')
     
     if object_pos != None:
         # Data shape is (1, 1, x, y) we want it to be (x, y)
@@ -75,21 +75,21 @@ for name, label in train_dt.items():
         # Set the size of the crop in pixels
         crop_size = units.Quantity((im_size, im_size), units.pixel)
         data = Cutout2D(img_data, object_pos, crop_size)
-    if (label): fits2pngData(data, './data/train/', name)
-    else: fits2pngData(data, './data/train/', name)
+    if (label): fits2pngData(data, '../data/input/train/', name)
+    else: fits2pngData(data, '../data/input/train/', name)
     
 
 for name, label in eval_dt.items():
-    if (label): fits2pngFile('./data/eval/positives/' + name + '.fits', './data/eval/', name)
-    else: fits2pngFile('./data/eval/negatives/' + name + '.fits', './data/eval/', name)
+    if (label): fits2pngFile('../data/input/eval/pos/' + name + '.fits', '../data/input/eval/', name)
+    else: fits2pngFile('../data/input/eval/neg/' + name + '.fits', '../data/input/eval/', name)
 
-#Spara annotations för false och positives
-with open('./data/train/annotations.csv', 'w') as f:
-    for key in train_dt.keys():
-        f.write("%s %s\n"%(key,train_dt[key]))
+# #Spara annotations för false och positives
+# with open('./data/train/annotations.csv', 'w') as f:
+#     for key in train_dt.keys():
+#         f.write("%s %s\n"%(key,train_dt[key]))
 
-with open('./data/eval/annotations.csv', 'w') as f:
-    for key in eval_dt.keys():
-        f.write("%s %s\n"%(key,train_dt[key]))
+# with open('./data/eval/annotations.csv', 'w') as f:
+#     for key in eval_dt.keys():
+#         f.write("%s %s\n"%(key,train_dt[key]))
 
 
