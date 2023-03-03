@@ -9,12 +9,8 @@ cnn-pytorch/cnn_pytorch/IMPROVEMENTS.md
 cnn-pytorch/data_local/
 
 # Image-processing
-image-processing/data/png/output/*.png
-image-processing/data/png/test/pos/*.png
-image-processing/data/png/test/neg/*.png
-image-processing/data/png/train/pos/*.png
-image-processing/data/png/train/neg/*.png
-image-processing/data/fits/pos/*.fits
+image-processing/image_processing/app_data/input/*.fits
+image-processing/image_processing/app_data/output/*.png
 
 # Data
 data/png/test/pos/*.png

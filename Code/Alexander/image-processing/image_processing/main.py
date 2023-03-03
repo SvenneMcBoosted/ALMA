@@ -54,25 +54,35 @@ def plot_and_save(image, file_name, output_dir, method_str):
     # plt.show()
 
 
-def get_fits_files(fits_directory):
+# def get_fits_files(fits_directory):
 
-    # Initialize an empty list to store the file paths
-    file_paths = []
+#     # Initialize an empty list to store the file paths
+#     file_paths = []
 
-    # Loop through all the files in the directory
-    for filename in os.listdir(fits_directory):
-        # Get the file path by joining the directory path and the filename
-        file_path = os.path.join(fits_directory, filename)
-        # Append the file path to the list
-        file_paths.append(file_path)
+#     # Loop through all the files in the directory
+#     for filename in os.listdir(fits_directory):
+#         # Get the file path by joining the directory path and the filename
+#         file_path = os.path.join(fits_directory, filename)
+#         # Append the file path to the list
+#         file_paths.append(file_path)
 
-    return file_paths
+#     return file_paths
+
+def get_fits_files(directory):
+    """
+    Returns a list of file paths for all FITS files in the given directory.
+    """
+    fits_files = []
+    for filename in os.listdir(directory):
+        if filename.endswith('.fits'):
+            fits_files.append(os.path.join(directory, filename))
+    return fits_files
 
 
 if __name__ == "__main__":
 
-    output_dir = '../data/png/output/'
-    for file_path in get_fits_files('../data/fits/pos/'):
+    output_dir = './app_data/output/'
+    for file_path in get_fits_files('./app_data/input/'):
         file_name = os.path.splitext(os.path.basename(file_path))[0]
         cropped_image, method_bool = find_celestial_bodies(file_path)
 
