@@ -4,3 +4,6 @@
 # ALMA stuff
 alminercopy.py
 testclick.py
+
+# Tensorflow
+/Code/Erik/cnnTensorflow

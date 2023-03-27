@@ -36,10 +36,10 @@ def fits2pngData(data, save_path, name):
     plt.savefig('./data/train/' + name + '.png', bbox_inches='tight', pad_inches=0)
     plt.close()
 
-train_positives = {os.path.splitext(f)[0] : 1 for f in os.listdir('./data/train/positives')}
-train_negatives = {os.path.splitext(f)[0] : 0 for f in os.listdir('./data/train/negatives')}
-eval_positives = {os.path.splitext(f)[0] : 1 for f in os.listdir('./data/eval/positives')}
-eval_negatives = {os.path.splitext(f)[0] : 0 for f in os.listdir('./data/eval/negatives')}
+train_positives = {os.path.splitext(f)[0] : 1 for f in os.listdir('./data/org/fits/pos/')}
+train_negatives = {os.path.splitext(f)[0] : 0 for f in os.listdir('./data/org/fits/neg/')}
+eval_positives = {os.path.splitext(f)[0] : 1 for f in os.listdir('./data/eval/pos/')}
+eval_negatives = {os.path.splitext(f)[0] : 0 for f in os.listdir('./data/eval/neg/')}
 train_dt = {**train_positives, **train_negatives}
 eval_dt = {**eval_positives, **eval_negatives}
 
@@ -63,11 +63,11 @@ def find_object_pos(file):
 #Spara alla .fits filer som png för inmatninig i CNN
 for name, label in train_dt.items():
     if (label):
-        img_data = fits.getdata('./data/train/positives/' + name + '.fits')
-        object_pos = find_object_pos('./data/train/positives/' + name + '.fits')
+        img_data = fits.getdata('./data/org/fits/pos/' + name + '.fits')
+        object_pos = find_object_pos('./data/org/fits/pos/' + name + '.fits')
     else:
-        img_data = fits.getdata('./data/train/negatives/' + name + '.fits')
-        object_pos = find_object_pos('./data/train/negatives/' + name + '.fits')
+        img_data = fits.getdata('./data/org/fits/neg/' + name + '.fits')
+        object_pos = find_object_pos('./data/org/fits/neg/' + name + '.fits')
     
     if object_pos != None:
         # Data shape is (1, 1, x, y) we want it to be (x, y)
@@ -80,8 +80,8 @@ for name, label in train_dt.items():
     
 
 for name, label in eval_dt.items():
-    if (label): fits2pngFile('./data/eval/positives/' + name + '.fits', './data/eval/', name)
-    else: fits2pngFile('./data/eval/negatives/' + name + '.fits', './data/eval/', name)
+    if (label): fits2pngFile('./data/eval/pos/' + name + '.fits', './data/eval/', name)
+    else: fits2pngFile('./data/eval/neg/' + name + '.fits', './data/eval/', name)
 
 #Spara annotations för false och positives
 with open('./data/train/annotations.csv', 'w') as f:

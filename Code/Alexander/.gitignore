@@ -1,0 +1,20 @@
+.python-version
+
+# Projects
+alma-local/
+
+# Cnn-pytorch
+cnn-pytorch/cnn_pytorch/snippets.py
+cnn-pytorch/cnn_pytorch/IMPROVEMENTS.md
+cnn-pytorch/data_local/
+
+# Image-processing
+image-processing/image_processing/app_data/input/*.fits
+image-processing/image_processing/app_data/output/*.png
+
+# Data
+data/png/test/pos/*.png
+data/png/test/neg/*.png
+data/png/train/pos/*.png
+data/png/train/neg/*.png
+data/fits/pos/*.fits
