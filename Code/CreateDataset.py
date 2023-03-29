@@ -36,6 +36,14 @@ def fits2pngData(data, save_path, name):
     plt.savefig('./data/train/' + name + '.png', bbox_inches='tight', pad_inches=0)
     plt.close()
 
+def saveFits(data, save_path, name):
+    n = np.arange(100.0)
+    hdu = fits.PrimaryHDU(n)
+    hdul = fits.HDUList([hdu])
+    hdul.data = data.data
+    hdul.writeto(save_path + name + '.fits')
+
+
 train_positives = {os.path.splitext(f)[0] : 1 for f in os.listdir('./data/org/fits/pos/')}
 train_negatives = {os.path.splitext(f)[0] : 0 for f in os.listdir('./data/org/fits/neg/')}
 eval_positives = {os.path.splitext(f)[0] : 1 for f in os.listdir('./data/eval/pos/')}
@@ -75,8 +83,8 @@ for name, label in train_dt.items():
         # Set the size of the crop in pixels
         crop_size = units.Quantity((im_size, im_size), units.pixel)
         data = Cutout2D(img_data, object_pos, crop_size)
-    if (label): fits2pngData(data, './data/train/', name)
-    else: fits2pngData(data, './data/train/', name)
+    if (label): saveFits(data, './data/train/', name)
+    else: saveFits(data, './data/train/', name)
     
 
 for name, label in eval_dt.items():
@@ -85,11 +93,11 @@ for name, label in eval_dt.items():
 
 #Spara annotations för false och positives
 with open('./data/train/annotations.csv', 'w') as f:
-    for key in train_dt.keys():
-        f.write("%s %s\n"%(key,train_dt[key]))
+    for name, label in train_dt.items():
+        f.write("%s %s\n"%(name,label))
 
 with open('./data/eval/annotations.csv', 'w') as f:
-    for key in eval_dt.keys():
-        f.write("%s %s\n"%(key,train_dt[key]))
+    for name, label in train_dt.items():
+        f.write("%s %s\n"%(name,label))
 
 
