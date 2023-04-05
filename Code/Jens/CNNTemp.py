@@ -12,6 +12,8 @@ from torchvision.io import read_image, ImageReadMode
 from torchvision.utils import save_image
 from torchvision import transforms
 from torch.utils.data import Dataset
+import numpy as np
+from astropy.io import fits
 
 
 
@@ -19,7 +21,7 @@ from torch.utils.data import Dataset
 class CustomImageDataset(Dataset):
     def __init__(self, annotations_file, img_dir, impath_index, 
     label_index, label_fn, usecols=[0,1], transform=None):
-        self.img_labels = pd.read_csv(annotations_file, usecols=usecols)
+        self.img_labels = pd.read_csv(annotations_file, usecols=usecols,sep=' ')
         self.img_dir = img_dir
         self.impath_index = impath_index
         self.label_index = label_index
@@ -30,11 +32,19 @@ class CustomImageDataset(Dataset):
 
     def __getitem__(self, idx):
         img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, self.impath_index])
-        image = read_image(img_path, mode=ImageReadMode.RGB)
+        print(img_path)
+        image = load_fits_as_tensor(img_path + '.fits')
+        print(image.shape)
         label = self.label_fn(self.img_labels.iloc[idx, self.label_index])
         if self.transform:
             image = self.transform(image)
         return image, label
+    
+    
+def load_fits_as_tensor(filename):
+        """Read a FITS file from disk and convert it to a Torch tensor."""
+        fits_np = fits.getdata(filename, memmap=False)
+        return torch.from_numpy(fits_np.astype(np.float32))
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -91,29 +101,21 @@ img_transform = transforms.Compose([transforms.Resize((128, 128))])
 er_label_fn = lambda s: int(s)
 kg_label_fn = lambda s: int(s == "few varrao, hive beetles" or  s == "Varroa, Small Hive Beetles")
 
-er_train_set = CustomImageDataset(  "varroa_dataset/train/gt_one.csv", 
-                                    "varroa_dataset/train", 
+er_train_set = CustomImageDataset(  "C:/Users/jensc/Documents/GitHub/ALMA/Code/data/train/annotations.csv", 
+                                    "C:/Users/jensc/Documents/GitHub/ALMA/Code/data/train", 
                                     0, 
                                     1, 
                                     er_label_fn)
 
-er_val_set = CustomImageDataset(    "varroa_dataset/val/gt_one.csv", 
-                                    "varroa_dataset/val", 
+er_val_set = CustomImageDataset(    "C:/Users/jensc/Documents/GitHub/ALMA/Code/data/train/annotations.csv", 
+                                    "C:/Users/jensc/Documents/GitHub/ALMA/Code/data/train", 
                                     0, 
                                     1, 
                                     er_label_fn)
 
-kg_train_set = CustomImageDataset(  "kaggle_dataset/bee_data.csv", 
-                                    "kaggle_data set/bee_imgs", 
-                                    0, 
-                                    6, 
-                                    kg_label_fn, 
-                                    usecols=[0,1,2,3,4,5,6], 
-                                    transform=img_transform)
 
 er_train_loader = DataLoader(er_train_set, batch_size=batch_size, shuffle=True)
 er_val_loader = DataLoader(er_val_set, batch_size=batch_size)
-kg_train_loader = DataLoader(kg_train_set, batch_size=batch_size, shuffle=True)
 
 # ======================= MODEL =========================
 
@@ -195,8 +197,9 @@ with torch.no_grad():
     list = []
     unsure_num = 0
     for i in range(n_images):
-        img_path = "images\\img_" + str(i) + ".png" if sys.platform == "win32" else "images/img_" + str(i) + ".png"
-        img = read_image(img_path)
+        img_path = "images\\img_" + str(i) + ".fits" if sys.platform == "win32" else "images/img_" + str(i) + ".fits"
+        img = load_fits_as_tensor(img_path)
+        print(img.shape())
         img = img.to(device)
         img = img[None, :, :, :]
         img = img.float()
